@@ -40,6 +40,8 @@
       <BlockDetails v-if="block" :block="block" />
 
       <ExecutionInfo v-if="executionInfo" :executionInfo="executionInfo" />
+      <Receipt v-if="receipt" :receipt="receipt" />
+      
 
     </div>
   </div>
@@ -57,6 +59,7 @@ const hash = ref(route.params.hash || '')
 const transaction = ref(null)
 const block = ref(null)
 const executionInfo = ref(null)
+const receipt = ref(null)
 const ethNodeUrl = 'https://mainnet.era.zksync.io' // Replace with your Ethereum node URL
 
 
@@ -81,6 +84,7 @@ const fetchTransaction = async (hashValue) => {
     if (transaction.value && transaction.value.blockNumber) {
       await fetchBlockDetails(transaction.value.blockNumber)
       await fetchExecutionInfo(hashValue)
+      await fetchReceipt(hashValue)
     }
   } catch (error) {
     console.error('Error fetching transaction:', error)
@@ -131,6 +135,29 @@ const fetchExecutionInfo = async (hashValue) => {
     console.error('Error fetching execution info details:', error)
   }
 }
+
+const fetchReceipt = async (hashValue) => {
+  try {
+    const response = await fetch(ethNodeUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_getTransactionReceipt',
+        params: [hashValue],
+        id: 1,
+      }),
+    })
+
+    const result = await response.json()
+    receipt.value = result.result
+  } catch (error) {
+    console.error('Error fetching execution info details:', error)
+  }
+}
+
 
 // Watch the URL parameter and automatically fetch transaction details
 watch(() => route.params.hash, (newHash) => {
