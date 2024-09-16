@@ -10,17 +10,27 @@
         <span class="label">Timestamp:</span>
         <UText>{{ formatTimestamp(block.timestamp) }}</UText>
       </div>
+      
       <div class="detail-item">
-        <span class="label">Transactions:</span>
-        <UText>{{ block.transactions.length }}</UText>
+        <span class="label">Batch:</span>
+        <UText>{{ block.l1BatchNumber }}</UText>
       </div>
       <div class="detail-item">
-        <span class="label">Miner:</span>
-        <UText>{{ block.miner }}</UText>
+        <span class="label">L1 gas:</span>
+        <UText>{{ block.l1GasPrice }}</UText>
       </div>
       <div class="detail-item">
-        <span class="label">Gas Used:</span>
-        <UText>{{ parseInt(block.gasUsed, 16) }}</UText>
+        <span class="label">L2 gas:</span>
+        <UText>{{ block.l2FairGasPrice }}</UText>
+      </div>
+            <div class="detail-item">
+        <span class="label">Fair pubdata:</span>
+        <UText>{{ block.fairPubdataPrice }}</UText>
+      </div>
+
+            <div class="detail-item">
+        <span class="label">Protocol Version</span>
+        <UText>{{ block.protocolVersion }}</UText>
       </div>
     </UCard>
   </div>

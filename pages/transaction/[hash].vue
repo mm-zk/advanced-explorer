@@ -38,6 +38,9 @@
 
       <!-- Display Block Details Component -->
       <BlockDetails v-if="block" :block="block" />
+
+      <ExecutionInfo v-if="executionInfo" :executionInfo="executionInfo" />
+
     </div>
   </div>
 </template>
@@ -53,6 +56,7 @@ const router = useRouter()
 const hash = ref(route.params.hash || '')
 const transaction = ref(null)
 const block = ref(null)
+const executionInfo = ref(null)
 const ethNodeUrl = 'https://mainnet.era.zksync.io' // Replace with your Ethereum node URL
 
 
@@ -76,6 +80,7 @@ const fetchTransaction = async (hashValue) => {
 
     if (transaction.value && transaction.value.blockNumber) {
       await fetchBlockDetails(transaction.value.blockNumber)
+      await fetchExecutionInfo(hashValue)
     }
   } catch (error) {
     console.error('Error fetching transaction:', error)
@@ -84,6 +89,7 @@ const fetchTransaction = async (hashValue) => {
 
 const fetchBlockDetails = async (blockNumber) => {
   try {
+    let foo = parseInt(blockNumber,16);
     const response = await fetch(ethNodeUrl, {
       method: 'POST',
       headers: {
@@ -91,8 +97,8 @@ const fetchBlockDetails = async (blockNumber) => {
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
-        method: 'eth_getBlockByNumber',
-        params: [blockNumber, true],
+        method: 'zks_getBlockDetails',
+        params: [foo],
         id: 1,
       }),
     })
@@ -101,6 +107,28 @@ const fetchBlockDetails = async (blockNumber) => {
     block.value = result.result
   } catch (error) {
     console.error('Error fetching block details:', error)
+  }
+}
+
+const fetchExecutionInfo = async (hashValue) => {
+  try {
+    const response = await fetch(ethNodeUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'unstable_getTransactionExecutionInfo',
+        params: [hashValue],
+        id: 1,
+      }),
+    })
+
+    const result = await response.json()
+    executionInfo.value = result.result.executionInfo
+  } catch (error) {
+    console.error('Error fetching execution info details:', error)
   }
 }
 
