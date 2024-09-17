@@ -1,6 +1,6 @@
 <template>
     <UCard class="query-card">
-        <h2 class="title">Ethereum Transaction Lookup</h2>
+        <h2 class="title">ZKSync Transaction Lookup</h2>
         <UInput v-model="hash" placeholder="Enter transaction hash" class="query-input" />
         <UButton @click="updateURL" size="lg" class="fetch-button">Fetch Transaction</UButton>
     </UCard>

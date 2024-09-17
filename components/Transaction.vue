@@ -1,7 +1,7 @@
 <template>
     <div class="transaction-lookup-container">
         <div v-if="transaction">
-            <UCard class="result-card">
+            <UCard class="result-card network-card">
                 <h3>Network</h3>
                 <div class="detail-item">
                     <span class="label">Network:</span>
@@ -118,7 +118,7 @@
             </div>
         </div>
         <div v-else>
-            <UCard class="result-card">
+            <UCard class="result-card network-card">
                 <h3>Network</h3>
                 <div class="detail-item">
                     <span class="label">Network:</span>
@@ -364,6 +364,10 @@ onMounted(() => {
 
 .transaction-details {
     margin-top: 15px;
+}
+
+.network-card {
+    background-color: rgb(138, 138, 138);
 }
 
 .detail-item {
