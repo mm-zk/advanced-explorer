@@ -7,6 +7,10 @@
     </UCard>
 
     <div v-if="transaction" class="result-container">
+
+        <BlockHistory :blockId="blockId" :rpcUrl="rpcUrl"/>
+
+
       <UCard class="result-card">
         <h3>Transaction Details</h3>
         <div v-if="transaction.blockNumber" class="transaction-details">
@@ -41,6 +45,8 @@
 
       <ExecutionInfo v-if="executionInfo" :executionInfo="executionInfo" />
       <Receipt v-if="receipt" :receipt="receipt" />
+
+
       
 
     </div>
@@ -61,6 +67,9 @@ const block = ref(null)
 const executionInfo = ref(null)
 const receipt = ref(null)
 const ethNodeUrl = 'https://mainnet.era.zksync.io' // Replace with your Ethereum node URL
+
+const rpcUrl = ethNodeUrl;
+const blockId = ref(null);
 
 
 const fetchTransaction = async (hashValue) => {
@@ -85,6 +94,7 @@ const fetchTransaction = async (hashValue) => {
       await fetchBlockDetails(transaction.value.blockNumber)
       await fetchExecutionInfo(hashValue)
       await fetchReceipt(hashValue)
+      blockId.value = transaction.value.blockNumber;
     }
   } catch (error) {
     console.error('Error fetching transaction:', error)
