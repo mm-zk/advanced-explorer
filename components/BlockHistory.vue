@@ -4,32 +4,31 @@
       <h3>Block History</h3>
       <div class="detail-item">
         <span class="label">Block Number:</span>
-        <UText>{{ parseInt(blockId, 16) }}</UText>
+        <span>{{ parseInt(blockId, 16) }}</span>
       </div>
 
       <div class="detail-item">
         <span class="label">Batch number:</span>
-        <UText>{{ currentBatch }}</UText>
+        <span>{{ currentBatch }}</span>
       </div>
 
       <div class="detail-item">
         <span class="label">L1 gas prices:</span>
-        <UText>{{ prepreviousBatchBlock?.l1GasPrice }}</UText>
-        <UText>{{ previousBatchBlock?.l1GasPrice }}</UText>
-        <UText>{{ currentBlock.l1GasPrice }}</UText>
+        <span>{{ prepreviousBatchBlock?.l1GasPrice }}</span>
+        <span>{{ previousBatchBlock?.l1GasPrice }}</span>
+        <span>{{ currentBlock.l1GasPrice }}</span>
       </div>
 
       <div class="detail-item">
         <span class="label">Pubdata prices:</span>
-        <UText>{{ prepreviousBatchBlock?.fairPubdataPrice }}</UText>
-        <UText>{{ previousBatchBlock?.fairPubdataPrice }}</UText>
-        <UText>{{ currentBlock.fairPubdataPrice }}</UText>
+        <span>{{ prepreviousBatchBlock?.fairPubdataPrice }}</span>
+        <span>{{ previousBatchBlock?.fairPubdataPrice }}</span>
+        <span>{{ currentBlock.fairPubdataPrice }}</span>
       </div>
 
       <div class="detail-item">
         <span class="label">Pubdata prices:</span>
-        <CompareVals :val1="prepreviousBatchBlock?.fairPubdataPrice", :val2="previousBatchBlock?.fairPubdataPrice" :val3="currentBlock.fairPubdataPrice"/>
-        
+        <CompareVals :val1="prepreviousBatchBlock?.fairPubdataPrice" :val2="previousBatchBlock?.fairPubdataPrice" :val3="currentBlock?.fairPubdataPrice"/> 
       </div>
 
 
@@ -47,7 +46,7 @@ import { ref } from 'vue'
 // Props to receive block data
 const props = defineProps({
   blockId: {
-    type: Number,
+    type: String,
     required: true
   },
   rpcUrl: {
@@ -125,8 +124,9 @@ await fetchBlockDetails(props.blockId).then(response => {
     prepreviousBatch.value = response.l1BatchNumber - 2;
     fetchFirstBlockFromBatch(previousBatch.value).then(response => {
         fetchBlockDetails(response[0]).then(response => {
+            console.log("Setting response to ",response); 
             previousBatchBlock.value = response;
-            console.log(response.value);
+            
         })
     });
     fetchFirstBlockFromBatch(prepreviousBatch.value).then(response => {

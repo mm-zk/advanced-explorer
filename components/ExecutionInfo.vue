@@ -4,11 +4,11 @@
       <h3>Execution details</h3>
       <div class="detail-item">
         <span class="label">Comp gas used</span>
-        <UText>{{ executionInfo.computational_gas_used }}</UText>
+        <span>{{ executionInfo.computational_gas_used }}</span>
       </div>
       <div class="detail-item">
         <span class="label">Pubdata:</span>
-        <UText>{{ executionInfo.pubdata_published }}</UText>
+        <span>{{ executionInfo.pubdata_published }}</span>
       </div>
     </UCard>
   </div>

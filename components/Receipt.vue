@@ -4,11 +4,11 @@
       <h3>Receipt details</h3>
       <div class="detail-item">
         <span class="label">Gas used</span>
-        <UText>{{ receipt.gasUsed }}</UText>
+        <span>{{ receipt.gasUsed }}</span>
       </div>
       <div class="detail-item">
         <span class="label">Status:</span>
-        <UText>{{ receipt.status }}</UText>
+        <span>{{ receipt.status }}</span>
       </div>
     </UCard>
   </div>

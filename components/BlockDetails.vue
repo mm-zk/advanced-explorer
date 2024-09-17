@@ -4,33 +4,33 @@
       <h3>Block Details</h3>
       <div class="detail-item">
         <span class="label">Block Number:</span>
-        <UText>{{ block.number }}</UText>
+        <span>{{ block.number }}</span>
       </div>
       <div class="detail-item">
         <span class="label">Timestamp:</span>
-        <UText>{{ formatTimestamp(block.timestamp) }}</UText>
+        <span>{{ formatTimestamp(block.timestamp) }}</span>
       </div>
       
       <div class="detail-item">
         <span class="label">Batch:</span>
-        <UText>{{ block.l1BatchNumber }}</UText>
+        <span>{{ block.l1BatchNumber }}</span>
       </div>
       <div class="detail-item">
         <span class="label">L1 gas:</span>
-        <UText>{{ block.l1GasPrice }}</UText>
+        <span>{{ block.l1GasPrice }}</span>
       </div>
       <div class="detail-item">
         <span class="label">L2 gas:</span>
-        <UText>{{ block.l2FairGasPrice }}</UText>
+        <span>{{ block.l2FairGasPrice }}</span>
       </div>
             <div class="detail-item">
         <span class="label">Fair pubdata:</span>
-        <UText>{{ block.fairPubdataPrice }}</UText>
+        <span>{{ block.fairPubdataPrice }}</span>
       </div>
 
             <div class="detail-item">
         <span class="label">Protocol Version</span>
-        <UText>{{ block.protocolVersion }}</UText>
+        <span>{{ block.protocolVersion }}</span>
       </div>
     </UCard>
   </div>

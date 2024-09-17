@@ -3,12 +3,12 @@
     <UCard class="query-card">
       <h2 class="title">Ethereum Transaction Lookup</h2>
       <UInput v-model="hash" placeholder="Enter transaction hash" class="query-input" />
-      <UButton @click="updateURL" size="large" class="fetch-button">Fetch Transaction</UButton>
+      <UButton @click="updateURL" size="lg" class="fetch-button">Fetch Transaction</UButton>
     </UCard>
 
     <div v-if="transaction" class="result-container">
 
-        <BlockHistory :blockId="blockId" :rpcUrl="rpcUrl"/>
+        <BlockHistory v-if="blockId" :blockId="blockId" :rpcUrl="rpcUrl"/>
 
 
       <UCard class="result-card">
@@ -16,23 +16,23 @@
         <div v-if="transaction.blockNumber" class="transaction-details">
           <div class="detail-item">
             <span class="label">Block Number:</span>
-            <UText>{{ parseInt(transaction.blockNumber, 16) }}</UText>
+            <span>{{ parseInt(transaction.blockNumber, 16) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Gas:</span>
-            <UText>{{ parseInt(transaction.gas, 16) }}</UText>
+            <span>{{ parseInt(transaction.gas, 16) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Gas Price:</span>
-            <UText>{{ parseInt(transaction.gasPrice, 16) }}</UText>
+            <span>{{ parseInt(transaction.gasPrice, 16) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Nonce:</span>
-            <UText>{{ parseInt(transaction.nonce, 16) }}</UText>
+            <span>{{ parseInt(transaction.nonce, 16) }}</span>
           </div>
           <div class="detail-item">
             <span class="label">Transaction Index:</span>
-            <UText>{{ parseInt(transaction.transactionIndex, 16) }}</UText>
+            <span>{{ parseInt(transaction.transactionIndex, 16) }}</span>
           </div>
         </div>
         <div v-else>
@@ -94,7 +94,8 @@ const fetchTransaction = async (hashValue) => {
       await fetchBlockDetails(transaction.value.blockNumber)
       await fetchExecutionInfo(hashValue)
       await fetchReceipt(hashValue)
-      blockId.value = transaction.value.blockNumber;
+      console.log("Setting block id to: " + transaction.value.blockNumber)
+      blockId.value = transaction.value.blockNumber
     }
   } catch (error) {
     console.error('Error fetching transaction:', error)
@@ -245,7 +246,7 @@ const updateURL = () => {
   font-weight: bold;
 }
 
-UText {
+span {
   color: #e2e2e2;
 }
 </style>
