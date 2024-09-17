@@ -1,7 +1,7 @@
 <template>
   <div class="index-container">
     <UCard class="query-card">
-      <h2 class="title">Ethereum Transaction Lookup</h2>
+      <h2 class="title">ZKSync Transaction Lookup</h2>
       <UInput v-model="hash" placeholder="Enter transaction hash" class="query-input" />
       <UButton @click="redirectToTransaction" size="large" class="fetch-button">Go to Transaction</UButton>
     </UCard>
