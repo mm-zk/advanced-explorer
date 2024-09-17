@@ -14,16 +14,7 @@
 
       <div class="detail-item">
         <span class="label">L1 gas prices:</span>
-        <span>{{ prepreviousBatchBlock?.l1GasPrice }}</span>
-        <span>{{ previousBatchBlock?.l1GasPrice }}</span>
-        <span>{{ currentBlock.l1GasPrice }}</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="label">Pubdata prices:</span>
-        <span>{{ prepreviousBatchBlock?.fairPubdataPrice }}</span>
-        <span>{{ previousBatchBlock?.fairPubdataPrice }}</span>
-        <span>{{ currentBlock.fairPubdataPrice }}</span>
+        <CompareVals :val1="prepreviousBatchBlock?.l1GasPrice" :val2="previousBatchBlock?.l1GasPrice" :val3="currentBlock?.l1GasPrice"/> 
       </div>
 
       <div class="detail-item">
@@ -31,10 +22,15 @@
         <CompareVals :val1="prepreviousBatchBlock?.fairPubdataPrice" :val2="previousBatchBlock?.fairPubdataPrice" :val3="currentBlock?.fairPubdataPrice"/> 
       </div>
 
+      <div class="detail-item">
+        <span class="label">L2 gas price:</span>
+        <CompareVals :val1="prepreviousBatchBlock?.l2FairGasPrice" :val2="previousBatchBlock?.l2FairGasPrice" :val3="currentBlock?.l2FairGasPrice"/> 
+      </div>
 
-
-
-
+      <div class="detail-item">
+        <span class="label">Pubdata cost:</span>
+        <CompareVals :val1="computePubdataCost(prepreviousBatchBlock)"  :val2="computePubdataCost(previousBatchBlock)" :val3="computePubdataCost(currentBlock)"/> 
+      </div>
       
     </UCard>
   </div>
@@ -68,6 +64,11 @@ const previousBatchBlock = ref(null);
 const prepreviousBatch = ref(null);
 const prepreviousBatchBlock = ref(null);
 
+
+const computePubdataCost = (block) => {
+    
+    return Math.round(block?.fairPubdataPrice / block?.l2FairGasPrice)
+}
 
 
 const fetchBlockDetails = async (blockNumber) => {
