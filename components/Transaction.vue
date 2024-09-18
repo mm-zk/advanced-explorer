@@ -53,16 +53,17 @@
 
                     <UCard class="result-card">
                         <h3>Gas usage breakdown</h3>
-                        <div v-if="executionInfo && receipt && block" class="transaction-details">
+                        <div v-if="executionInfo && receipt && block && ethBlock" class="transaction-details">
                             <div class="detail-item">
                                 <span class="label">Gas Used:</span>
                                 <span v-if="receipt">{{ formatNumber(parseInt(receipt.gasUsed, 16)) }}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="label">Pubdata:</span>
-                                <span>{{ executionInfo.pubdata_published }} * {{ computePubdataCost(block) }} = {{
-                                    formatNumber(executionInfo.pubdata_published * computePubdataCost(block))
-                                }}</span>
+                                <span>{{ executionInfo.pubdata_published }} * {{ computePubdataCost(block, ethBlock) }}
+                                    = {{
+                                        formatNumber(executionInfo.pubdata_published * computePubdataCost(block, ethBlock))
+                                    }}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="label">Compute:</span>
@@ -76,7 +77,8 @@
                 <div class="block-details">
                     <UCard class="result-card">
                         <h3>Execution analysis</h3>
-                        <div v-if="executionInfo && receipt && block && zkTransaction" class="transaction-details">
+                        <div v-if="executionInfo && receipt && block && zkTransaction && ethBlock"
+                            class="transaction-details">
                             <div class="detail-item">
                                 <span class="label">Gas per pubdata:</span>
                                 <span>{{ formatNumber(parseInt(zkTransaction.gasPerPubdata, 16)) }}</span>
@@ -159,6 +161,7 @@ console.log("inside tx ", props.hash);
 
 const transaction = ref(null)
 const block = ref(null)
+const ethBlock = ref(null)
 const executionInfo = ref(null)
 const receipt = ref(null)
 const zkTransaction = ref(null)
@@ -195,6 +198,7 @@ const fetchTransaction = async (hashValue) => {
             await fetchExecutionInfo(hashValue)
             await fetchReceipt(hashValue)
             await fetchZksTransaction(hashValue)
+            await fetchEthBlockDetails(transaction.value.blockNumber)
             console.log("Setting block id to: " + transaction.value.blockNumber)
             blockId.value = transaction.value.blockNumber
         }
@@ -225,9 +229,32 @@ const fetchBlockDetails = async (blockNumber) => {
         console.error('Error fetching block details:', error)
     }
 }
-const computePubdataCost = (block) => {
 
-    return Math.round(block?.fairPubdataPrice / block?.l2FairGasPrice)
+const fetchEthBlockDetails = async (blockNumber) => {
+    try {
+        const response = await fetch(props.rpcUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_getBlockByNumber',
+                params: [blockNumber, false],
+                id: 1,
+            }),
+        })
+
+        const result = await response.json()
+        ethBlock.value = result.result
+
+    } catch (error) {
+        console.error('Error fetching block details:', error)
+    }
+}
+const computePubdataCost = (block, ethBlock) => {
+
+    return Math.round(block?.fairPubdataPrice / ethBlock?.baseFeePerGas)
 }
 
 // Function to format large numbers with thousand separators, or show "N/A" for undefined values
@@ -379,9 +406,5 @@ onMounted(() => {
 
 .label {
     font-weight: bold;
-}
-
-span {
-    color: #e2e2e2;
 }
 </style>
