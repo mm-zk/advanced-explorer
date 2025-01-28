@@ -6,6 +6,7 @@
     </UCard>
     <Transaction :hash="hash" :rpcUrl="'https://mainnet.era.zksync.io'" :networkName="'ERA Mainnet'" />
     <Transaction :hash="hash" :rpcUrl="'https://sepolia.era.zksync.dev'" :networkName="'Sepolia Testnet'" />
+    <Transaction :hash="hash" :rpcUrl="'https://api.mainnet.abs.xyz'" :networkName="'Abstract Mainnet'" />
     <Transaction :hash="hash" :rpcUrl="'https://api.testnet.abs.xyz'" :networkName="'Abstract Testnet'" />
     <Transaction :hash="hash" :rpcUrl="'https://rpc.sophon.xyz/'" :networkName="'Sophon Mainnet'" />
     <Transaction :hash="hash" :rpcUrl="'https://rpc.testnet.sophon.xyz/'" :networkName="'Sophon Testnet'" />
