@@ -1,102 +1,150 @@
 <template>
-    <UCard class="query-card">
+    <div class="lookup-container">
+      <UCard class="query-card">
         <h2 class="title">ZKSync Transaction Lookup</h2>
         <UInput v-model="hash" placeholder="Enter transaction hash" class="query-input" />
         <UButton @click="updateURL" size="lg" class="fetch-button">Fetch Transaction</UButton>
-    </UCard>
-    <Transaction :hash="hash" :rpcUrl="'https://mainnet.era.zksync.io'" :networkName="'ERA Mainnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://sepolia.era.zksync.dev'" :networkName="'Sepolia Testnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://api.mainnet.abs.xyz'" :networkName="'Abstract Mainnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://api.testnet.abs.xyz'" :networkName="'Abstract Testnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://rpc.sophon.xyz/'" :networkName="'Sophon Mainnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://rpc.testnet.sophon.xyz/'" :networkName="'Sophon Testnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://rpc.treasure.lol/'" :networkName="'Treasure Mainnet'" />
-    <Transaction :hash="hash" :rpcUrl="'https://rpc.topaz.treasure.lol/'" :networkName="'Treasure Testnet'" />
-
-</template>
-
-<script setup>
-import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'nuxt/app'
-
-const route = useRoute()
-const router = useRouter()
-
-const hash = ref(route.params.hash || '')
-
-
-
-// Watch the URL parameter and automatically fetch transaction details
-watch(() => route.params.hash, (newHash) => {
-    if (newHash) {
-        hash.value = newHash
+      </UCard>
+      
+      <!-- Show the transaction if a network was found -->
+      <div v-if="selectedNetwork" class="transaction-container">
+        <Transaction 
+          :hash="hash" 
+          :rpcUrl="selectedNetwork.rpcUrl" 
+          :networkName="selectedNetwork.networkName" 
+          :explorerUrl="selectedNetwork.explorerUrl" 
+        />
+      </div>
+      
+      <!-- Show a loading message while checking networks -->
+      <div v-else-if="hash && loading" class="transaction-container">
+        <p>Loading transaction details...</p>
+      </div>
+      
+      <!-- Show "no valid transaction found" only after the delay -->
+      <div v-else-if="hash && noTxFound" class="transaction-container">
+        <p>No valid transaction found on any network for this hash.</p>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, watch, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'nuxt/app'
+  import networksConfig from '~/config.js'
+  import Transaction from '~/components/Transaction.vue'
+  
+  const route = useRoute()
+  const router = useRouter()
+  
+  // Transaction hash from URL
+  const hash = ref(route.params.hash || '')
+  
+  // Reactive flags for network selection
+  const selectedNetwork = ref(null)
+  const loading = ref(false)
+  const noTxFound = ref(false)
+  
+  // Try to fetch a transaction from a given network
+  const fetchTxForNetwork = async (network) => {
+    try {
+      const response = await fetch(network.rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'eth_getTransactionByHash',
+          params: [hash.value],
+          id: 1,
+        }),
+      })
+      const result = await response.json()
+      // Return true if a valid transaction is found.
+      return result.result !== null
+    } catch (error) {
+      console.error(`Error checking network ${network.networkName}:`, error)
+      return false
     }
-})
-
-
-
-// Update the URL when the user enters a new transaction hash
-const updateURL = () => {
+  }
+  
+  // Iterate over networks to determine which one has the valid transaction.
+  const determineNetwork = async () => {
+    loading.value = true
+    noTxFound.value = false
+    selectedNetwork.value = null
+    
+    for (const network of networksConfig) {
+      const exists = await fetchTxForNetwork(network)
+      if (exists) {
+        selectedNetwork.value = network
+        break
+      }
+    }
+    
+    // Delay the "no valid transaction" message by 2 seconds.
+    setTimeout(() => {
+      if (!selectedNetwork.value) {
+        noTxFound.value = true
+      }
+      loading.value = false
+    }, 2000)
+  }
+  
+  onMounted(async () => {
     if (hash.value) {
-        router.push({ path: `/transaction/${hash.value}` })
+      await determineNetwork()
     }
-}
-</script>
-
-<style scoped>
-.transaction-lookup-container {
+  })
+  
+  // Re-check networks if the hash changes.
+  watch(hash, async (newHash) => {
+    if (newHash) {
+      await determineNetwork()
+    }
+  })
+  
+  const updateURL = () => {
+    if (hash.value) {
+      router.push({ path: `/transaction/${hash.value}` })
+    }
+  }
+  </script>
+  
+  <style scoped>
+  .lookup-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
     padding: 20px;
-}
-
-.query-card {
+  }
+  
+  .query-card {
     padding: 20px;
     width: 100%;
     max-width: 600px;
     margin-bottom: 20px;
     text-align: center;
-}
-
-.title {
-    margin-bottom: 20px;
-}
-
-.query-input {
-    margin-bottom: 15px;
-    width: 100%;
-}
-
-.fetch-button {
-    width: 100%;
-}
-
-.result-container {
+  }
+  
+  .transaction-container {
     width: 100%;
     max-width: 600px;
-}
-
-.result-card {
-    padding: 20px;
-}
-
-.transaction-details {
-    margin-top: 15px;
-}
-
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.label {
-    font-weight: bold;
-}
-
-span {
-    color: #e2e2e2;
-}
-</style>
+    margin: 20px auto;
+  }
+  
+  .title {
+    margin-bottom: 20px;
+  }
+  
+  .query-input {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  
+  .fetch-button {
+    width: 100%;
+  }
+  </style>

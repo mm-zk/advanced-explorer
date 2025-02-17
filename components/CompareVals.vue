@@ -1,88 +1,82 @@
 <template>
-  <div class="values-container">
-    <!-- Value 1 is shown first without a label -->
-    <span class="value">{{ formatNumber(val1) }}</span>
-
-    <!-- Value 2 with % comparison to Value 1 -->
-    <span class="value">
-      {{ formatNumber(val2) }}
-      <span v-if="val1 !== undefined && val2 !== undefined" :class="comparisonClass(val2, val1)">
-        ({{ calculatePercentage(val2, val1) }}%)
+  <div class="compare-values">
+    <!-- Display raw values on one line -->
+    <div class="raw-values">
+      <span>{{ formattedVal1 }}</span>
+      <span>{{ formattedVal2 }}</span>
+      <span>{{ formattedVal3 }}</span>
+    </div>
+    <!-- Display percentage differences below the raw values -->
+    <div class="percent-differences">
+      <span v-if="percentDiff1 !== null" :class="getClass(percentDiff1)">
+        {{ percentDiff1 }}%
       </span>
-    </span>
-
-    <!-- Value 3 with % comparison to Value 2 -->
-    <span class="value">
-      {{ formatNumber(val3) }}
-      <span v-if="val2 !== undefined && val3 !== undefined" :class="comparisonClass(val3, val2)">
-        ({{ calculatePercentage(val3, val2) }}%)
+      <span v-if="percentDiff2 !== null" :class="getClass(percentDiff2)">
+        {{ percentDiff2 }}%
       </span>
-    </span>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue';
 
-// Props to accept the three values, which can be numbers or undefined
 const props = defineProps({
-  val1: {
-    type: Number,
-    required: false,
-    default: undefined
-  },
-  val2: {
-    type: Number,
-    required: false,
-    default: undefined
-  },
-  val3: {
-    type: Number,
-    required: false,
-    default: undefined
-  }
-})
+  val1: { type: [String, Number], default: null },
+  val2: { type: [String, Number], default: null },
+  val3: { type: [String, Number], default: null }
+});
 
-// Function to format large numbers with thousand separators, or show "N/A" for undefined values
+// Helper function to format numbers (similar to your BlockHistory helper)
 const formatNumber = (num) => {
-  return num !== undefined ? num.toLocaleString('en-US') : 'N/A'
-}
+  return num !== null && num !== undefined ? Number(num).toLocaleString('en-US') : 'N/A';
+};
 
-// Function to calculate percentage change between two values
-const calculatePercentage = (current, previous) => {
-  if (previous === 0 || previous === undefined || current === undefined) return 'N/A'
-  const percentageChange = ((current - previous) / previous) * 100
-  return percentageChange.toFixed(2)
-}
+const formattedVal1 = computed(() => formatNumber(props.val1));
+const formattedVal2 = computed(() => formatNumber(props.val2));
+const formattedVal3 = computed(() => formatNumber(props.val3));
 
-// Function to return the appropriate class based on the percentage change
-const comparisonClass = (current, previous) => {
-  if (current < previous) {
-    return 'green-text'
-  } else if (current > previous) {
-    return 'red-text'
-  } else {
-    return ''
-  }
-}
+// Compute percentage difference between two values
+const computePercentDiff = (a, b) => {
+  if (a == null || b == null) return null;
+  const numA = Number(a);
+  const numB = Number(b);
+  if (numA === 0) return null;
+  return Math.round(((numB - numA) / numA) * 100);
+};
+
+const percentDiff1 = computed(() => computePercentDiff(props.val1, props.val2));
+const percentDiff2 = computed(() => computePercentDiff(props.val2, props.val3));
+
+const getClass = (value) => {
+  if (value === null) return '';
+  return value >= 0 ? 'positive' : 'negative';
+};
 </script>
 
 <style scoped>
-.values-container {
+.compare-values {
   display: flex;
-  gap: 15px;
+  flex-direction: column;
   align-items: center;
 }
-
-.value {
-  font-size: 16px;
+.raw-values {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  /* Adjust spacing as needed */
 }
-
-.green-text {
+.percent-differences {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+.positive {
   color: green;
 }
-
-.red-text {
+.negative {
   color: red;
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="index-container">
+  <div class="lookup-container">
     <UCard class="query-card">
       <h2 class="title">ZKSync Transaction Lookup</h2>
       <UInput v-model="hash" placeholder="Enter transaction hash" class="query-input" />
-      <UButton @click="redirectToTransaction" size="large" class="fetch-button">Go to Transaction</UButton>
+      <UButton @click="updateURL" size="lg" class="fetch-button">Search</UButton>
     </UCard>
   </div>
 </template>
@@ -16,7 +16,7 @@ const router = useRouter()
 const hash = ref('')
 
 // Redirect to the dynamic transaction page when a transaction hash is entered
-const redirectToTransaction = () => {
+const updateURL = () => {
   if (hash.value) {
     router.push({ path: `/transaction/${hash.value}` })
   }
@@ -24,10 +24,13 @@ const redirectToTransaction = () => {
 </script>
 
 <style scoped>
-.index-container {
+.lookup-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Centers vertically */
+  width: 100%;
+  min-height: 100vh; /* Ensures the container takes full viewport height */
   padding: 20px;
 }
 
