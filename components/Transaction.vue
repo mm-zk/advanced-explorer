@@ -17,7 +17,7 @@
                 <span class="label">Hash:</span>
                 <span>
                   <a :href="`${explorerUrl}/tx/${hash}`" target="_blank">
-                    {{ hash.slice(0, 10) }}...
+                    {{ hash.slice(0,6) }}...{{ hash.slice(-4) }}
                   </a>
                 </span>
               </div>
@@ -178,44 +178,51 @@
       </div>
     </div>
   </template>
-    
+      
   <script setup>
   import { ref, computed, onMounted } from 'vue'
   import BlockDetails from '~/components/BlockDetails.vue'
   import BlockHistory from '~/components/BlockHistory.vue'
   import config from '~/config.js'
-    
+      
   const props = defineProps({
     hash: { type: String, required: true },
     rpcUrl: { type: String, required: true },
     networkName: { type: String, required: true }
   })
-    
+      
   console.log("inside tx ", props.hash);
-    
+      
   // Look up the network config based on networkName prop.
   const networkConfig = computed(() => {
     return config.find(net => net.networkName === props.networkName) || {}
   });
-    
+      
   // Compute the explorer URL from the network config.
-  const explorerUrl = computed(() => networkConfig.value.explorerUrl || '');
-    
+  const explorerUrl = computed(() => {
+    let url = networkConfig.value.explorerUrl || '';
+    // Remove trailing slash if present.
+    if (url.endsWith('/')) {
+      url = url.slice(0, -1);
+    }
+    return url;
+  });
+      
   const transaction = ref(null)
   const block = ref(null)
   const ethBlock = ref(null)
   const executionInfo = ref(null)
   const receipt = ref(null)
   const zkTransaction = ref(null)
-    
+      
   const blockId = ref(null)
-    
+      
   // Computed property for max gas usage: (pubdata bytes * max gas per pubdata) + compute gas.
   const computeMaxGasUsage = computed(() => {
     return parseInt(zkTransaction.value.gasPerPubdata, 16) *
       executionInfo.value.pubdata_published + executionInfo.value.computational_gas_used;
   });
-    
+      
   // Computed property for the difference between total gas used and (pubdata cost + compute)
   const differenceGas = computed(() => {
     if (!receipt.value || !executionInfo.value || !block.value || !ethBlock.value) return 0;
@@ -224,7 +231,7 @@
     const computeGasNum = executionInfo.value.computational_gas_used;
     return gasUsedNum - (pubdataCostNum + computeGasNum);
   });
-    
+      
   const fetchTransaction = async (hashValue) => {
     try {
       const response = await fetch(props.rpcUrl, {
@@ -239,7 +246,7 @@
       });
       const result = await response.json();
       transaction.value = result.result;
-    
+      
       if (transaction.value && transaction.value.blockNumber) {
         await fetchBlockDetails(transaction.value.blockNumber);
         await fetchExecutionInfo(hashValue);
@@ -253,7 +260,7 @@
       console.error('Error fetching transaction:', error);
     }
   };
-    
+      
   const fetchBlockDetails = async (blockNumber) => {
     try {
       let foo = parseInt(blockNumber, 16);
@@ -273,7 +280,7 @@
       console.error('Error fetching block details:', error);
     }
   };
-    
+      
   const fetchEthBlockDetails = async (blockNumber) => {
     try {
       const response = await fetch(props.rpcUrl, {
@@ -292,15 +299,15 @@
       console.error('Error fetching block details:', error);
     }
   };
-    
+      
   const computePubdataCost = (block, ethBlock) => {
     return Math.round(block?.fairPubdataPrice / ethBlock?.baseFeePerGas);
   };
-    
+      
   const formatNumber = (num) => {
     return num !== undefined ? num.toLocaleString('en-US') : 'N/A';
   };
-    
+      
   const fetchExecutionInfo = async (hashValue) => {
     try {
       const response = await fetch(props.rpcUrl, {
@@ -319,7 +326,7 @@
       console.error('Error fetching execution info details:', error);
     }
   };
-    
+      
   const fetchReceipt = async (hashValue) => {
     try {
       const response = await fetch(props.rpcUrl, {
@@ -338,7 +345,7 @@
       console.error('Error fetching execution info details:', error);
     }
   };
-    
+      
   const fetchZksTransaction = async (hashValue) => {
     try {
       const response = await fetch(props.rpcUrl, {
@@ -357,19 +364,19 @@
       console.error('Error fetching ZK transaction:', error);
     }
   };
-    
+      
   const statusToHuman = (statusVal) => {
     let status = parseInt(statusVal, 16);
     return status === 1 ? "SUCCESS" : "FAILED";
   };
-    
+      
   onMounted(() => {
     if (props.hash) {
       fetchTransaction(props.hash);
     }
   });
   </script>
-    
+      
   <style scoped>
   .transaction-lookup-container {
     display: flex;
@@ -377,7 +384,7 @@
     align-items: center;
     padding: 20px;
   }
-    
+      
   .query-card {
     padding: 20px;
     width: 100%;
@@ -385,66 +392,66 @@
     margin-bottom: 20px;
     text-align: center;
   }
-    
+      
   .title {
     margin-bottom: 20px;
   }
-    
+      
   .query-input {
     margin-bottom: 15px;
     width: 100%;
   }
-    
+      
   .fetch-button {
     width: 100%;
   }
-    
+      
   .result-container {
     width: 100%;
     max-width: 600px;
   }
-    
+      
   .result-card {
     padding: 20px;
   }
-    
+      
   .transaction-details {
     margin-top: 15px;
   }
-    
+      
   .network-card {
     background-color: rgb(138, 138, 138);
   }
-    
+      
   .detail-item {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px solid #e0e0e0;
   }
-    
+      
   .label {
     font-weight: bold;
     display: flex;
     align-items: center;
   }
-    
+      
   .info-icon {
     margin-left: 5px;
     cursor: pointer;
     color: #888;
     font-size: 1em;
   }
-
+  
   a {
-  color: #1976d2;       /* A blue color that typically indicates a link */
-  text-decoration: underline;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-a:hover {
-  color: #0d47a1;       /* A darker blue on hover */
-  text-decoration: none;
-}
+    color: #1976d2;
+    text-decoration: underline;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  a:hover {
+    color: #0d47a1;
+    text-decoration: none;
+  }
   </style>

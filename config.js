@@ -2,7 +2,7 @@ export default [
     {
       networkName: 'ERA Mainnet',
       rpcUrl: 'https://mainnet.era.zksync.io',
-      explorerUrl: 'https://explorer.mainnet.abs.xyz'
+      explorerUrl: 'https://explorer.zksync.io/'
     },
     {
       networkName: 'Sepolia Testnet',
@@ -32,16 +32,16 @@ export default [
     {
       networkName: 'Treasure Mainnet',
       rpcUrl: 'https://rpc.treasure.lol/',
-      explorerUrl: 'https://treasurescan.io/'
+      explorerUrl: 'https://treasurescan.io'
     },
     {
       networkName: 'Treasure Testnet',
       rpcUrl: 'https://rpc.topaz.treasure.lol/',
-      explorerUrl: 'https://topaz.treasurescan.io/'
+      explorerUrl: 'https://topaz.treasurescan.io'
     },
     {
       networkName: 'Wonder Chain Testnet',
       rpcUrl: 'https://rpc.testnet.wonderchain.org/',
-      explorerUrl: 'https://explorer.testnet.wonderchain.org/'
+      explorerUrl: 'https://explorer.testnet.wonderchain.org'
     }
   ];
