@@ -43,5 +43,10 @@ export default [
       networkName: 'Wonder Chain Testnet',
       rpcUrl: 'https://rpc.testnet.wonderchain.org/',
       explorerUrl: 'https://explorer.testnet.wonderchain.org'
+    },
+    {
+      networkName: 'GenLayer Testnet',
+      rpcUrl: 'https://genlayer-testnet.rpc.caldera.xyz/http',
+      explorerUrl: 'https://genlayer-testnet.explorer.caldera.xyz'
     }
   ];
